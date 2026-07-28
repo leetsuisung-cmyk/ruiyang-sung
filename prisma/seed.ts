@@ -16,8 +16,21 @@ async function main() {
       },
     });
     console.log(`已建立管理員帳號: ${adminUsername}`);
+  } else if (process.env.ADMIN_PASSWORD) {
+    // 有明確設定 ADMIN_PASSWORD 時，以環境變數為準更新密碼（讓部署平台改密碼能生效）
+    await prisma.admin.update({
+      where: { username: adminUsername },
+      data: { passwordHash: await hashPassword(adminPassword) },
+    });
+    console.log(`已依環境變數更新管理員密碼: ${adminUsername}`);
   } else {
     console.log(`管理員帳號已存在: ${adminUsername}`);
+  }
+
+  // 單一管理員系統：若改過 ADMIN_USERNAME，移除其他舊帳號，避免舊帳密仍可登入
+  const removed = await prisma.admin.deleteMany({ where: { username: { not: adminUsername } } });
+  if (removed.count > 0) {
+    console.log(`已移除 ${removed.count} 個舊管理員帳號`);
   }
 
   const existingTour = await prisma.tour.findFirst({ where: { name: "東北5日" } });

@@ -1,0 +1,168 @@
+// 睿煬旅行社 線上報名＋收訂金系統 資料庫 schema
+// 金額欄位一律用 Int（新台幣元，無小數）
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum DiscountMode {
+  PER_PERSON // 優惠金額 = 每人優惠 x 人數
+  FLAT_GROUP // 優惠金額 = 整團固定金額
+}
+
+enum DepositMode {
+  PER_PERSON // 訂金 = 每人固定金額 x 人數
+  FLAT_GROUP // 訂金 = 整團固定金額
+}
+
+enum PaymentMethod {
+  CREDIT_CARD // 線上刷卡 TrustPay
+  BANK_TRANSFER // 銀行匯款
+}
+
+enum PaymentStatus {
+  UNPAID // 未付
+  DEPOSIT_PAID // 訂金已付
+  FULLY_PAID // 已付清
+}
+
+enum PaymentTransactionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum UploadedFileType {
+  PASSPORT
+  BANK_RECEIPT
+}
+
+model Admin {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Tour {
+  id               String   @id @default(cuid())
+  name             String // 團名，如「東北5日」
+  departureCountry String // 出發國家／目的地
+  departureDate    DateTime // 出發日期
+  days             Int // 天數
+  pricePerPerson   Int // 每人團費金額（元）
+
+  discountAmount Int          @default(0) // 優惠金額（依 discountMode 解讀）
+  discountMode   DiscountMode @default(FLAT_GROUP)
+
+  depositAmount Int // 應繳訂金金額（依 depositMode 解讀）
+  depositMode   DepositMode @default(PER_PERSON)
+
+  isActive  Boolean  @default(true) // 是否開放報名（下架保留舊訂單）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders Order[]
+}
+
+model Order {
+  id      String @id @default(cuid())
+  orderNo String @unique // 對客顯示的訂單編號，如 20260728-0001
+
+  tourId String
+  tour   Tour   @relation(fields: [tourId], references: [id])
+
+  memberCount Int // 報名人數
+
+  // 建單當下的金額快照，之後團資料異動不影響已成立訂單
+  pricePerPersonSnapshot Int
+  discountAmountSnapshot Int
+  discountModeSnapshot   DiscountMode
+  depositAmountSnapshot  Int
+  depositModeSnapshot    DepositMode
+
+  subtotal        Int // 小計 = 每人團費 x 人數
+  totalDiscount   Int // 優惠金額（換算後實際金額）
+  totalDue        Int // 應收合計 = 小計 - 優惠
+  depositRequired Int // 應繳訂金（換算後實際金額）
+  balanceDue      Int // 尾款 = 應收合計 - 訂金
+
+  contactName  String
+  contactPhone String
+  contactEmail String
+
+  paymentMethod PaymentMethod
+  paymentStatus PaymentStatus @default(UNPAID)
+
+  // 銀行匯款專用
+  bankTransferLast5 String?
+  bankReceiptFileId String?
+
+  confirmationEmailSentAt DateTime?
+  receiptEmailSentAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members             Member[]
+  paymentTransactions PaymentTransaction[]
+  uploadedFiles       UploadedFile[]
+}
+
+model Member {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  sortOrder Int // 團員順序 1,2,3...
+
+  chineseName         String
+  passportEnglishName String
+  passportNumber      String
+  passportExpiry      DateTime
+  specialDiet         String? // 特殊飲食需求（選填）
+  passportFileId      String? // -> UploadedFile.id
+
+  roomNo String? // 分房表用，後台手動指定
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UploadedFile {
+  id      String @id @default(cuid())
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  originalName String
+  storedPath   String // 相對於 uploads/ 根目錄
+  mimeType     String
+  sizeBytes    Int
+  fileType     UploadedFileType
+
+  createdAt DateTime @default(now())
+}
+
+model PaymentTransaction {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  provider String @default("TRUSTPAY")
+  amount   Int
+  status   PaymentTransactionStatus @default(PENDING)
+
+  checkToken         String?
+  providerRef        String?
+  rawCallbackPayload String?
+  isTestMode         Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

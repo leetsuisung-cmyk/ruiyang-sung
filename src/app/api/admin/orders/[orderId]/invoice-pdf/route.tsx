@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { prisma } from "@/lib/prisma";
 import { registerPdfFonts } from "@/lib/pdf/fonts";
-import { InvoicePdfDocument } from "@/lib/pdf/invoice-pdf";
+import { ReceiptPdfDocument } from "@/lib/pdf/receipt-pdf";
+import { PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS } from "@/lib/labels";
 
 export async function GET(
   _request: Request,
@@ -16,18 +17,29 @@ export async function GET(
 
   registerPdfFonts();
 
+  // 與客人端收據共用同一份「請款單」版面，後台匯出的內容與客人拿到的一致
   const buffer = await renderToBuffer(
-    <InvoicePdfDocument
+    <ReceiptPdfDocument
       data={{
         orderNo: order.orderNo,
         tourName: order.tour.name,
+        tourCode: order.tour.tourCode,
+        departureCountry: order.tour.departureCountry,
         departureDate: order.tour.departureDate,
+        days: order.tour.days,
         memberCount: order.memberCount,
         pricePerPerson: order.pricePerPersonSnapshot,
         subtotal: order.subtotal,
         totalDiscount: order.totalDiscount,
         totalDue: order.totalDue,
-        issuedDate: new Date(),
+        depositRequired: order.depositRequired,
+        balanceDue: order.balanceDue,
+        chargeType: order.chargeTypeSnapshot,
+        contactName: order.contactName,
+        contactPhone: order.contactPhone,
+        paymentMethodLabel: PAYMENT_METHOD_LABELS[order.paymentMethod] ?? order.paymentMethod,
+        paymentStatusLabel: PAYMENT_STATUS_LABELS[order.paymentStatus] ?? order.paymentStatus,
+        createdAt: order.createdAt,
       }}
     />
   );

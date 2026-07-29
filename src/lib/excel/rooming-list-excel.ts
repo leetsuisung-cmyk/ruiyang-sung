@@ -11,8 +11,7 @@ export async function buildRoomingListExcel(
   sheet.columns = [
     { header: "ROOM NO", key: "roomNo", width: 12 },
     { header: "姓名", key: "chineseName", width: 16 },
-    { header: "護照英文姓名", key: "passportEnglishName", width: 24 },
-    { header: "護照號碼", key: "passportNumber", width: 16 },
+    { header: "電話", key: "phone", width: 18 },
     { header: "特殊飲食", key: "specialDiet", width: 24 },
   ];
 
@@ -27,8 +26,7 @@ export async function buildRoomingListExcel(
     sheet.addRow({
       roomNo: row.roomNo || "",
       chineseName: row.chineseName,
-      passportEnglishName: row.passportEnglishName,
-      passportNumber: row.passportNumber,
+      phone: row.phone || "",
       specialDiet: row.specialDiet || "",
     });
   }

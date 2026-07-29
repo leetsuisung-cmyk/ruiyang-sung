@@ -28,8 +28,7 @@ export async function GET(
         rows: order.members.map((m) => ({
           roomNo: m.roomNo ?? "",
           chineseName: m.chineseName,
-          passportEnglishName: m.passportEnglishName,
-          passportNumber: m.passportNumber,
+          phone: m.phone,
           specialDiet: m.specialDiet ?? "",
         })),
       }}

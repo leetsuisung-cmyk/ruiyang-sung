@@ -91,31 +91,11 @@ export default async function AdminOrderDetailPage({
           members={order.members.map((m) => ({
             id: m.id,
             chineseName: m.chineseName,
-            passportEnglishName: m.passportEnglishName,
-            passportNumber: m.passportNumber,
+            phone: m.phone,
             specialDiet: m.specialDiet,
             roomNo: m.roomNo,
           }))}
         />
-
-        <div className="mt-4 flex flex-col gap-2">
-          {order.members.map((m) => (
-            <div key={m.id} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm">
-              <span>
-                {m.chineseName}（護照效期 {formatDate(m.passportExpiry)}）
-              </span>
-              {m.passportFileId && (
-                <a
-                  href={`/api/uploads/${m.passportFileId}`}
-                  target="_blank"
-                  className="text-teal-700 hover:underline"
-                >
-                  下載護照檔案
-                </a>
-              )}
-            </div>
-          ))}
-        </div>
       </section>
     </div>
   );

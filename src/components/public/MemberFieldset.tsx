@@ -1,5 +1,4 @@
 import { FormField, inputClassName, inputErrorClassName } from "@/components/ui/FormField";
-import { FileUploadField } from "./FileUploadField";
 import type { MemberFieldErrors, MemberFormState } from "./types";
 
 export function MemberFieldset({
@@ -22,7 +21,7 @@ export function MemberFieldset({
       <h3 className="text-sm font-bold text-gray-900">第 {index + 1} 位團員</h3>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField label="中文姓名" htmlFor={`member-${index}-chineseName`} required error={errors?.chineseName}>
+        <FormField label="姓名" htmlFor={`member-${index}-chineseName`} required error={errors?.chineseName}>
           <input
             id={`member-${index}-chineseName`}
             className={errors?.chineseName ? inputErrorClassName : inputClassName}
@@ -32,39 +31,13 @@ export function MemberFieldset({
           />
         </FormField>
 
-        <FormField
-          label="護照英文姓名"
-          htmlFor={`member-${index}-passportEnglishName`}
-          required
-          hint="請依護照上英文姓名填寫，例如：WANG/XIAOMING"
-          error={errors?.passportEnglishName}
-        >
+        <FormField label="電話" htmlFor={`member-${index}-phone`} required error={errors?.phone}>
           <input
-            id={`member-${index}-passportEnglishName`}
-            className={errors?.passportEnglishName ? inputErrorClassName : inputClassName}
-            value={value.passportEnglishName}
-            onChange={(e) => update("passportEnglishName", e.target.value.toUpperCase())}
-            required
-          />
-        </FormField>
-
-        <FormField label="護照號碼" htmlFor={`member-${index}-passportNumber`} required error={errors?.passportNumber}>
-          <input
-            id={`member-${index}-passportNumber`}
-            className={errors?.passportNumber ? inputErrorClassName : inputClassName}
-            value={value.passportNumber}
-            onChange={(e) => update("passportNumber", e.target.value.toUpperCase())}
-            required
-          />
-        </FormField>
-
-        <FormField label="護照效期" htmlFor={`member-${index}-passportExpiry`} required error={errors?.passportExpiry}>
-          <input
-            id={`member-${index}-passportExpiry`}
-            type="date"
-            className={errors?.passportExpiry ? inputErrorClassName : inputClassName}
-            value={value.passportExpiry}
-            onChange={(e) => update("passportExpiry", e.target.value)}
+            id={`member-${index}-phone`}
+            className={errors?.phone ? inputErrorClassName : inputClassName}
+            value={value.phone}
+            onChange={(e) => update("phone", e.target.value)}
+            placeholder="例如：0912345678"
             required
           />
         </FormField>
@@ -82,16 +55,6 @@ export function MemberFieldset({
           />
         </FormField>
       </div>
-
-      <FormField label="護照照片／掃描檔" required error={errors?.passportFile}>
-        <FileUploadField
-          fileType="PASSPORT"
-          value={value.passportFile}
-          onChange={(v) => update("passportFile", v)}
-          required
-          error={errors?.passportFile}
-        />
-      </FormField>
     </div>
   );
 }

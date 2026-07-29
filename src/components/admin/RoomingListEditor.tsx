@@ -6,8 +6,7 @@ import { Button } from "@/components/ui/Button";
 export interface RoomingMember {
   id: string;
   chineseName: string;
-  passportEnglishName: string;
-  passportNumber: string;
+  phone: string;
   specialDiet: string | null;
   roomNo: string | null;
 }
@@ -50,8 +49,7 @@ export function RoomingListEditor({
             <tr>
               <th className="px-3 py-2">ROOM NO</th>
               <th className="px-3 py-2">姓名</th>
-              <th className="px-3 py-2">護照英文姓名</th>
-              <th className="px-3 py-2">護照號碼</th>
+              <th className="px-3 py-2">電話</th>
               <th className="px-3 py-2">特殊飲食</th>
             </tr>
           </thead>
@@ -66,8 +64,7 @@ export function RoomingListEditor({
                   />
                 </td>
                 <td className="px-3 py-2">{m.chineseName}</td>
-                <td className="px-3 py-2">{m.passportEnglishName}</td>
-                <td className="px-3 py-2">{m.passportNumber}</td>
+                <td className="px-3 py-2">{m.phone || "-"}</td>
                 <td className="px-3 py-2">{m.specialDiet || "-"}</td>
               </tr>
             ))}

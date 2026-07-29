@@ -25,20 +25,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "此團體不存在或已停止報名" }, { status: 404 });
   }
 
-  // 驗證護照檔案：必須存在、類型正確、且尚未被其他訂單使用
-  const passportFileIds = input.members.map((m) => m.passportFileId);
-  const passportFiles = await prisma.uploadedFile.findMany({
-    where: { id: { in: passportFileIds } },
-  });
-  const passportFileMap = new Map(passportFiles.map((f) => [f.id, f]));
-
-  for (const fileId of passportFileIds) {
-    const file = passportFileMap.get(fileId);
-    if (!file || file.fileType !== "PASSPORT" || file.orderId) {
-      return NextResponse.json({ error: "護照檔案無效或已被使用，請重新上傳" }, { status: 400 });
-    }
-  }
-
   let bankReceiptFile = null;
   if (input.paymentMethod === "BANK_TRANSFER" && input.bankReceiptFileId) {
     bankReceiptFile = await prisma.uploadedFile.findUnique({
@@ -92,21 +78,14 @@ export async function POST(request: Request) {
           create: input.members.map((member, index) => ({
             sortOrder: index + 1,
             chineseName: member.chineseName,
-            passportEnglishName: member.passportEnglishName,
-            passportNumber: member.passportNumber,
-            passportExpiry: member.passportExpiry,
+            phone: member.phone,
             specialDiet: member.specialDiet || null,
-            passportFileId: member.passportFileId,
           })),
         },
       },
       include: { members: true },
     });
 
-    await tx.uploadedFile.updateMany({
-      where: { id: { in: passportFileIds } },
-      data: { orderId: created.id },
-    });
     if (bankReceiptFile) {
       await tx.uploadedFile.update({
         where: { id: bankReceiptFile.id },

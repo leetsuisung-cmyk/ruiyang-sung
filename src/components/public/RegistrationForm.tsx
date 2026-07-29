@@ -62,9 +62,7 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
 
     if (newCount < members.length) {
       const toRemove = members.slice(newCount);
-      const hasData = toRemove.some(
-        (m) => m.chineseName.trim() || m.passportEnglishName.trim() || m.passportNumber.trim() || m.passportFile
-      );
+      const hasData = toRemove.some((m) => m.chineseName.trim() || m.phone.trim());
       if (
         hasData &&
         typeof window !== "undefined" &&
@@ -102,11 +100,8 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
       memberCount,
       members: members.map((m) => ({
         chineseName: m.chineseName,
-        passportEnglishName: m.passportEnglishName,
-        passportNumber: m.passportNumber,
-        passportExpiry: m.passportExpiry,
+        phone: m.phone,
         specialDiet: m.specialDiet,
-        passportFileId: m.passportFile?.fileId ?? "",
       })),
       contactName,
       contactPhone,

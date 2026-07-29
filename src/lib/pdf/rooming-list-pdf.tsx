@@ -6,8 +6,7 @@ import { pdfStyles } from "./styles";
 export interface RoomingListRow {
   roomNo: string;
   chineseName: string;
-  passportEnglishName: string;
-  passportNumber: string;
+  phone: string;
   specialDiet: string;
 }
 
@@ -42,16 +41,14 @@ export function RoomingListPdfDocument({ data }: { data: RoomingListPdfData }) {
           <View style={pdfStyles.tableRow}>
             <Text style={pdfStyles.tableHeaderCell}>ROOM NO</Text>
             <Text style={pdfStyles.tableHeaderCell}>姓名</Text>
-            <Text style={pdfStyles.tableHeaderCell}>護照英文姓名</Text>
-            <Text style={pdfStyles.tableHeaderCell}>護照號碼</Text>
+            <Text style={pdfStyles.tableHeaderCell}>電話</Text>
             <Text style={pdfStyles.tableHeaderCell}>特殊飲食</Text>
           </View>
           {data.rows.map((row, i) => (
             <View style={pdfStyles.tableRow} key={i}>
               <Text style={pdfStyles.tableCell}>{row.roomNo || "-"}</Text>
               <Text style={pdfStyles.tableCell}>{row.chineseName}</Text>
-              <Text style={pdfStyles.tableCell}>{row.passportEnglishName}</Text>
-              <Text style={pdfStyles.tableCell}>{row.passportNumber}</Text>
+              <Text style={pdfStyles.tableCell}>{row.phone || "-"}</Text>
               <Text style={pdfStyles.tableCell}>{row.specialDiet || "-"}</Text>
             </View>
           ))}

@@ -132,10 +132,13 @@ model Member {
 
   sortOrder Int // 團員順序 1,2,3...
 
-  chineseName         String
-  passportEnglishName String
-  passportNumber      String
-  passportExpiry      DateTime
+  chineseName String // 姓名
+  phone       String  @default("") // 團員連絡電話
+
+  // 護照資料改為線下提供，欄位保留相容舊訂單（皆選填）
+  passportEnglishName String?
+  passportNumber      String?
+  passportExpiry      DateTime?
   specialDiet         String? // 特殊飲食需求（選填）
   passportFileId      String? // -> UploadedFile.id
 

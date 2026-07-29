@@ -53,7 +53,7 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
   const fees = useMemo(() => calculateFees(tour, memberCount), [tour, memberCount]);
 
   function handleMemberCountChange(rawValue: number) {
-    const newCount = Math.max(1, Math.min(50, Number.isFinite(rawValue) ? rawValue : 1));
+    const newCount = Math.max(1, Number.isFinite(rawValue) ? Math.floor(rawValue) : 1);
 
     if (newCount < members.length) {
       const toRemove = members.slice(newCount);
@@ -180,7 +180,6 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
             id="memberCount"
             type="number"
             min={1}
-            max={50}
             className={inputClassName}
             value={memberCount}
             onChange={(e) => handleMemberCountChange(Number(e.target.value))}

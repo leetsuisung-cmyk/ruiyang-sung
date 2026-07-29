@@ -34,7 +34,14 @@ export default async function AdminToursPage() {
             {tours.map((tour) => (
               <tr key={tour.id} className="border-b border-gray-100 last:border-0">
                 <td className="px-4 py-3">
-                  <div className="font-medium text-gray-900">{tour.name}</div>
+                  <div className="font-medium text-gray-900">
+                    {tour.name}
+                    {tour.tourCode && (
+                      <span className="ml-2 rounded bg-gray-100 px-1.5 py-0.5 text-xs font-normal text-gray-500">
+                        {tour.tourCode}
+                      </span>
+                    )}
+                  </div>
                   <div className="text-xs text-gray-500">{tour.departureCountry}</div>
                 </td>
                 <td className="px-4 py-3">{formatDate(tour.departureDate)}</td>

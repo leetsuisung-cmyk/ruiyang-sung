@@ -20,6 +20,7 @@ export default async function EditTourPage({
         tourId={tour.id}
         initialValues={{
           name: tour.name,
+          tourCode: tour.tourCode ?? "",
           departureCountry: tour.departureCountry,
           departureDate: tour.departureDate.toISOString().slice(0, 10),
           days: tour.days,

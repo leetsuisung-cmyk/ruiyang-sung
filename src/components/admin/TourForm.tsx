@@ -7,6 +7,7 @@ import { FormField, inputClassName } from "@/components/ui/FormField";
 
 export interface TourFormValues {
   name: string;
+  tourCode: string;
   departureCountry: string;
   departureDate: string; // yyyy-mm-dd
   days: number;
@@ -18,8 +19,33 @@ export interface TourFormValues {
   isActive: boolean;
 }
 
+// 出發國家／目的地下拉選項（仍可自行輸入其他國家）
+const COUNTRY_OPTIONS = [
+  "日本",
+  "韓國",
+  "泰國",
+  "越南",
+  "新加坡",
+  "馬來西亞",
+  "印尼（峇里島）",
+  "菲律賓",
+  "柬埔寨",
+  "中國大陸",
+  "香港",
+  "澳門",
+  "歐洲",
+  "美國",
+  "加拿大",
+  "澳洲",
+  "紐西蘭",
+  "杜拜",
+  "土耳其",
+  "埃及",
+];
+
 const DEFAULT_VALUES: TourFormValues = {
   name: "",
+  tourCode: "",
   departureCountry: "",
   departureDate: "",
   days: 5,
@@ -85,14 +111,36 @@ export function TourForm({
           />
         </FormField>
 
-        <FormField label="出發國家／目的地" htmlFor="departureCountry" required>
+        <FormField label="團號" htmlFor="tourCode" hint="選填，自行輸入，例如 TH20260928A">
+          <input
+            id="tourCode"
+            className={inputClassName}
+            value={values.tourCode}
+            onChange={(e) => update("tourCode", e.target.value)}
+            placeholder="自行輸入團號"
+          />
+        </FormField>
+
+        <FormField
+          label="出發國家／目的地"
+          htmlFor="departureCountry"
+          hint="可下拉選擇常見國家，也可自行輸入"
+          required
+        >
           <input
             id="departureCountry"
             className={inputClassName}
+            list="departureCountryOptions"
             value={values.departureCountry}
             onChange={(e) => update("departureCountry", e.target.value)}
+            placeholder="選擇或輸入國家／目的地"
             required
           />
+          <datalist id="departureCountryOptions">
+            {COUNTRY_OPTIONS.map((country) => (
+              <option key={country} value={country} />
+            ))}
+          </datalist>
         </FormField>
 
         <FormField label="出發日期" htmlFor="departureDate" required>

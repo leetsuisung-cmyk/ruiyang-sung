@@ -27,6 +27,12 @@ export default async function TourRegistrationPage({
       <div className="mb-4 rounded-xl bg-white p-4 shadow-sm">
         <h1 className="text-lg font-bold text-gray-900">{tour.name}</h1>
         <dl className="mt-2 grid grid-cols-2 gap-y-1 text-sm text-gray-600">
+          {tour.tourCode && (
+            <>
+              <dt className="text-gray-400">團號</dt>
+              <dd>{tour.tourCode}</dd>
+            </>
+          )}
           <dt className="text-gray-400">出發國家／目的地</dt>
           <dd>{tour.departureCountry}</dd>
           <dt className="text-gray-400">出發日期</dt>

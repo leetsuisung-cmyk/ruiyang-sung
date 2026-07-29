@@ -5,6 +5,13 @@ export const depositModeSchema = z.enum(["PER_PERSON", "FLAT_GROUP"]);
 
 export const tourSchema = z.object({
   name: z.string().trim().min(1, "請輸入團名"),
+  tourCode: z
+    .string()
+    .trim()
+    .max(50, "團號長度不可超過 50 字")
+    .transform((v) => (v === "" ? null : v))
+    .nullish()
+    .default(null),
   departureCountry: z.string().trim().min(1, "請輸入出發國家／目的地"),
   departureDate: z.coerce.date({
     message: "請輸入有效的出發日期",

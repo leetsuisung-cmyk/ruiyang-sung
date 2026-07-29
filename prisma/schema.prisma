@@ -53,6 +53,7 @@ model Admin {
 model Tour {
   id               String   @id @default(cuid())
   name             String // 團名，如「東北5日」
+  tourCode         String? // 團號，後台自行輸入（選填），如 TH20260928A
   departureCountry String // 出發國家／目的地
   departureDate    DateTime // 出發日期
   days             Int // 天數

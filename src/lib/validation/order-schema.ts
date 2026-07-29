@@ -58,7 +58,7 @@ export const paymentInfoSchema = z.discriminatedUnion("paymentMethod", [
 export const createOrderSchema = z
   .object({
     tourId: z.string().min(1),
-    memberCount: z.coerce.number().int().min(1, "報名人數至少為 1 人").max(50, "單次報名人數不可超過 50 人"),
+    memberCount: z.coerce.number().int().min(1, "報名人數至少為 1 人"),
     members: z.array(memberSchema).min(1, "請至少填寫一位團員資料"),
   })
   .extend(contactSchema.shape)

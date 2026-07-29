@@ -12,22 +12,30 @@ export function FeeSummary({
   fees: FeeCalculationResult;
   chargeType?: "DEPOSIT" | "BALANCE";
 }) {
-  const rows: { label: string; value: string; emphasis?: boolean }[] =
-    chargeType === "BALANCE"
-      ? [
-          { label: `每人團費 x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
-          { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
-          { label: "應收合計", value: formatCurrency(fees.totalDue), emphasis: true },
-          { label: "訂金合計（已收／另計）", value: `- ${formatCurrency(fees.depositRequired)}` },
-          { label: "此次應繳尾款", value: formatCurrency(fees.balanceDue), emphasis: true },
-        ]
-      : [
-          { label: `每人團費 x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
-          { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
-          { label: "應收合計", value: formatCurrency(fees.totalDue), emphasis: true },
-          { label: "應繳訂金", value: formatCurrency(fees.depositRequired), emphasis: true },
-          { label: "尾款（出發前繳清）", value: formatCurrency(fees.balanceDue) },
-        ];
+  // 每人訂金/每人尾款：由合計除以人數回推，與請款單 PDF 的計算式一致
+  const depositPerPerson = Math.round(fees.depositRequired / memberCount);
+  const balancePerPerson = Math.round(fees.balanceDue / memberCount);
+  const chargeNow = chargeType === "BALANCE" ? fees.balanceDue : fees.depositRequired;
+
+  const rows: { label: string; value: string; emphasis?: boolean }[] = [
+    { label: `每人團費 ${formatCurrency(pricePerPerson)} x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
+    { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
+    { label: "團費合計", value: formatCurrency(fees.totalDue), emphasis: true },
+    {
+      label: `訂金合計（${formatCurrency(depositPerPerson)} x ${memberCount} 人）`,
+      value: formatCurrency(fees.depositRequired),
+    },
+    { label: "每人尾款（每人團費 - 優惠 - 每人訂金）", value: formatCurrency(balancePerPerson) },
+    {
+      label: `尾款合計（${formatCurrency(balancePerPerson)} x ${memberCount} 人）`,
+      value: formatCurrency(fees.balanceDue),
+    },
+    {
+      label: chargeType === "BALANCE" ? "此次應繳（尾款合計）" : "此次應繳（訂金合計）",
+      value: formatCurrency(chargeNow),
+      emphasis: true,
+    },
+  ];
 
   return (
     <div className="rounded-xl bg-teal-50 p-4">

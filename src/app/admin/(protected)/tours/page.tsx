@@ -25,8 +25,8 @@ export default async function AdminToursPage() {
               <th className="px-4 py-3">團名</th>
               <th className="px-4 py-3">出發日期</th>
               <th className="px-4 py-3">每人團費</th>
+              <th className="px-4 py-3">人數</th>
               <th className="px-4 py-3">訂單數</th>
-              <th className="px-4 py-3">狀態</th>
               <th className="px-4 py-3">操作</th>
             </tr>
           </thead>
@@ -46,16 +46,8 @@ export default async function AdminToursPage() {
                 </td>
                 <td className="px-4 py-3">{formatDate(tour.departureDate)}</td>
                 <td className="px-4 py-3">{formatCurrency(tour.pricePerPerson)}</td>
+                <td className="px-4 py-3">{tour.peopleCount ?? "—"}</td>
                 <td className="px-4 py-3">{tour._count.orders}</td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs ${
-                      tour.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
-                    }`}
-                  >
-                    {tour.isActive ? "開放中" : "已下架"}
-                  </span>
-                </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-3">
                     <Link href={`/admin/tours/${tour.id}`} className="text-teal-700 hover:underline">

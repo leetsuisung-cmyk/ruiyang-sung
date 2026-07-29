@@ -16,7 +16,7 @@ export interface TourFormValues {
   discountMode: "PER_PERSON" | "FLAT_GROUP";
   depositAmount: number;
   depositMode: "PER_PERSON" | "FLAT_GROUP";
-  isActive: boolean;
+  peopleCount: string; // 人數，選填，空字串代表未填
 }
 
 // 出發國家／目的地下拉選項（仍可自行輸入其他國家）
@@ -54,7 +54,7 @@ const DEFAULT_VALUES: TourFormValues = {
   discountMode: "FLAT_GROUP",
   depositAmount: 0,
   depositMode: "PER_PERSON",
-  isActive: true,
+  peopleCount: "",
 };
 
 export function TourForm({
@@ -178,16 +178,16 @@ export function TourForm({
           />
         </FormField>
 
-        <FormField label="是否開放報名" htmlFor="isActive">
-          <select
-            id="isActive"
+        <FormField label="人數" htmlFor="peopleCount" hint="選填，自行輸入">
+          <input
+            id="peopleCount"
+            type="number"
+            min={1}
             className={inputClassName}
-            value={values.isActive ? "true" : "false"}
-            onChange={(e) => update("isActive", e.target.value === "true")}
-          >
-            <option value="true">開放報名</option>
-            <option value="false">下架（不開放）</option>
-          </select>
+            value={values.peopleCount}
+            onChange={(e) => update("peopleCount", e.target.value)}
+            placeholder="自行輸入人數"
+          />
         </FormField>
 
         <FormField

@@ -65,7 +65,8 @@ model Tour {
   depositAmount Int // 應繳訂金金額（依 depositMode 解讀）
   depositMode   DepositMode @default(PER_PERSON)
 
-  isActive  Boolean  @default(true) // 是否開放報名（下架保留舊訂單）
+  peopleCount Int? // 人數，後台自行輸入（選填）
+  isActive  Boolean  @default(true) // 已停用下架功能，欄位保留相容舊資料，一律為 true
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

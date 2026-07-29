@@ -22,7 +22,10 @@ export const tourSchema = z.object({
   discountMode: discountModeSchema.default("FLAT_GROUP"),
   depositAmount: z.coerce.number().int().min(0, "訂金金額不可為負數"),
   depositMode: depositModeSchema.default("PER_PERSON"),
-  isActive: z.coerce.boolean().default(true),
+  peopleCount: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce.number().int().min(1, "人數至少為 1 人").nullable()
+  ).default(null),
 });
 
 export type TourInput = z.infer<typeof tourSchema>;

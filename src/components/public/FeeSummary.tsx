@@ -5,18 +5,29 @@ export function FeeSummary({
   pricePerPerson,
   memberCount,
   fees,
+  chargeType = "DEPOSIT",
 }: {
   pricePerPerson: number;
   memberCount: number;
   fees: FeeCalculationResult;
+  chargeType?: "DEPOSIT" | "BALANCE";
 }) {
-  const rows: { label: string; value: string; emphasis?: boolean }[] = [
-    { label: `每人團費 x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
-    { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
-    { label: "應收合計", value: formatCurrency(fees.totalDue), emphasis: true },
-    { label: "應繳訂金", value: formatCurrency(fees.depositRequired), emphasis: true },
-    { label: "尾款（出發前繳清）", value: formatCurrency(fees.balanceDue) },
-  ];
+  const rows: { label: string; value: string; emphasis?: boolean }[] =
+    chargeType === "BALANCE"
+      ? [
+          { label: `每人團費 x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
+          { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
+          { label: "應收合計", value: formatCurrency(fees.totalDue), emphasis: true },
+          { label: "訂金合計（已收／另計）", value: `- ${formatCurrency(fees.depositRequired)}` },
+          { label: "此次應繳尾款", value: formatCurrency(fees.balanceDue), emphasis: true },
+        ]
+      : [
+          { label: `每人團費 x ${memberCount} 人`, value: formatCurrency(fees.subtotal) },
+          { label: "優惠金額", value: `- ${formatCurrency(fees.totalDiscount)}` },
+          { label: "應收合計", value: formatCurrency(fees.totalDue), emphasis: true },
+          { label: "應繳訂金", value: formatCurrency(fees.depositRequired), emphasis: true },
+          { label: "尾款（出發前繳清）", value: formatCurrency(fees.balanceDue) },
+        ];
 
   return (
     <div className="rounded-xl bg-teal-50 p-4">

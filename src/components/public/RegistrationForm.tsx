@@ -20,6 +20,7 @@ export interface TourSummary {
   discountMode: DiscountMode;
   depositAmount: number;
   depositMode: DepositMode;
+  chargeType: "DEPOSIT" | "BALANCE"; // 此次消費收訂金或尾款
 }
 
 interface FormErrors {
@@ -51,6 +52,10 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
   const [submitting, setSubmitting] = useState(false);
 
   const fees = useMemo(() => calculateFees(tour, memberCount), [tour, memberCount]);
+
+  // 此次消費：依團體設定決定本次要收訂金合計還是尾款合計
+  const chargeWord = tour.chargeType === "BALANCE" ? "尾款" : "訂金";
+  const chargeNow = tour.chargeType === "BALANCE" ? fees.balanceDue : fees.depositRequired;
 
   function handleMemberCountChange(rawValue: number) {
     const newCount = Math.max(1, Number.isFinite(rawValue) ? Math.floor(rawValue) : 1);
@@ -186,7 +191,12 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
           />
         </FormField>
         <div className="mt-3">
-          <FeeSummary pricePerPerson={tour.pricePerPerson} memberCount={memberCount} fees={fees} />
+          <FeeSummary
+            pricePerPerson={tour.pricePerPerson}
+            memberCount={memberCount}
+            fees={fees}
+            chargeType={tour.chargeType}
+          />
         </div>
       </section>
 
@@ -238,7 +248,7 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
       </section>
 
       <section className="flex flex-col gap-3 rounded-xl bg-white p-4 shadow-sm">
-        <h2 className="text-sm font-bold text-gray-900">繳交訂金方式</h2>
+        <h2 className="text-sm font-bold text-gray-900">繳交{chargeWord}方式</h2>
         <PaymentMethodSection
           method={paymentMethod}
           onMethodChange={setPaymentMethod}
@@ -255,7 +265,7 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
       <div className="fixed inset-x-0 bottom-0 border-t border-gray-200 bg-white p-4 shadow-[0_-2px_8px_rgba(0,0,0,0.05)]">
         <div className="mx-auto max-w-2xl">
           <Button type="submit" disabled={submitting} className="w-full">
-            {submitting ? "送出中..." : `送出報名（應繳訂金 ${fees.depositRequired.toLocaleString("zh-TW")} 元）`}
+            {submitting ? "送出中..." : `送出報名（應繳${chargeWord} ${chargeNow.toLocaleString("zh-TW")} 元）`}
           </Button>
         </div>
       </div>

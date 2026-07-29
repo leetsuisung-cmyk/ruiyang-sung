@@ -8,11 +8,15 @@ async function markOrderDepositPaid(orderId: string, providerRef: string, rawPay
   const order = await prisma.order.findUnique({ where: { id: orderId } });
   if (!order) return null;
 
+  // 此次消費收尾款時，付款成功即視為已付清；收訂金則為訂金已付
+  const isBalanceCharge = order.chargeTypeSnapshot === "BALANCE";
+  const paidAmount = isBalanceCharge ? order.balanceDue : order.depositRequired;
+
   await prisma.paymentTransaction.create({
     data: {
       orderId: order.id,
       provider: "TRUSTPAY",
-      amount: order.depositRequired,
+      amount: paidAmount,
       status: "SUCCESS",
       providerRef,
       rawCallbackPayload: rawPayload,
@@ -21,7 +25,10 @@ async function markOrderDepositPaid(orderId: string, providerRef: string, rawPay
   });
 
   if (order.paymentStatus === "UNPAID") {
-    await prisma.order.update({ where: { id: order.id }, data: { paymentStatus: "DEPOSIT_PAID" } });
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { paymentStatus: isBalanceCharge ? "FULLY_PAID" : "DEPOSIT_PAID" },
+    });
   }
 
   await sendPaymentReceiptEmailIfNeeded(order.id);

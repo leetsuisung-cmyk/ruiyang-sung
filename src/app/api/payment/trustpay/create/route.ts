@@ -33,18 +33,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ checkoutUrl });
   }
 
+  // 此次消費依團體設定收訂金合計或尾款合計
+  const chargeAmount =
+    order.chargeTypeSnapshot === "BALANCE" ? order.balanceDue : order.depositRequired;
+
   const provider = getPaymentProvider();
   const { checkoutUrl, checkToken } = await provider.createCheckoutUrl({
     orderId: order.id,
     orderNo: order.orderNo,
-    amount: order.depositRequired,
+    amount: chargeAmount,
   });
 
   await prisma.paymentTransaction.create({
     data: {
       orderId: order.id,
       provider: "TRUSTPAY",
-      amount: order.depositRequired,
+      amount: chargeAmount,
       status: "PENDING",
       checkToken,
       isTestMode: false,

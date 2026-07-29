@@ -20,6 +20,11 @@ enum DepositMode {
   FLAT_GROUP // 訂金 = 整團固定金額
 }
 
+enum ChargeType {
+  DEPOSIT // 此次消費收訂金合計
+  BALANCE // 此次消費收尾款合計
+}
+
 enum PaymentMethod {
   CREDIT_CARD // 線上刷卡 TrustPay
   BANK_TRANSFER // 銀行匯款
@@ -65,6 +70,8 @@ model Tour {
   depositAmount Int // 應繳訂金金額（依 depositMode 解讀）
   depositMode   DepositMode @default(PER_PERSON)
 
+  chargeType ChargeType @default(DEPOSIT) // 此次消費：客人報名時收「訂金合計」或「尾款合計」
+
   peopleCount Int? // 人數，後台自行輸入（選填）
   isActive  Boolean  @default(true) // 已停用下架功能，欄位保留相容舊資料，一律為 true
   createdAt DateTime @default(now())
@@ -88,6 +95,7 @@ model Order {
   discountModeSnapshot   DiscountMode
   depositAmountSnapshot  Int
   depositModeSnapshot    DepositMode
+  chargeTypeSnapshot     ChargeType   @default(DEPOSIT) // 建單當下此次消費收訂金還是尾款
 
   subtotal        Int // 小計 = 每人團費 x 人數
   totalDiscount   Int // 優惠金額（換算後實際金額）

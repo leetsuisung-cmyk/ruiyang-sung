@@ -28,7 +28,7 @@ export default async function EditTourPage({
           discountAmount: tour.discountAmount,
           discountMode: tour.discountMode,
           depositAmount: tour.depositAmount,
-          depositMode: tour.depositMode,
+          chargeType: tour.chargeType,
           peopleCount: tour.peopleCount?.toString() ?? "",
         }}
       />

@@ -53,8 +53,17 @@ export default async function OrderSuccessPage({
         <Row label="付款狀態" value={PAYMENT_STATUS_LABELS[order.paymentStatus]} />
         <hr className="my-1 border-gray-100" />
         <Row label="應收合計" value={formatCurrency(order.totalDue)} />
-        <Row label="已收訂金" value={formatCurrency(order.depositRequired)} />
-        <Row label="尚欠尾款" value={formatCurrency(order.balanceDue)} emphasis />
+        {order.chargeTypeSnapshot === "BALANCE" ? (
+          <>
+            <Row label="訂金合計（已收／另計）" value={formatCurrency(order.depositRequired)} />
+            <Row label="此次應繳尾款" value={formatCurrency(order.balanceDue)} emphasis />
+          </>
+        ) : (
+          <>
+            <Row label="已收訂金" value={formatCurrency(order.depositRequired)} />
+            <Row label="尚欠尾款" value={formatCurrency(order.balanceDue)} emphasis />
+          </>
+        )}
       </div>
 
       {order.paymentMethod === "BANK_TRANSFER" && order.paymentStatus === "UNPAID" && (

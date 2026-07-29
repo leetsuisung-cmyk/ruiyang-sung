@@ -37,7 +37,7 @@ export function PaymentMethodSection({
             onChange={() => onMethodChange("CREDIT_CARD")}
           />
           <span className="font-medium text-gray-900">線上刷卡</span>
-          <p className="mt-1 text-xs text-gray-500">送出後導轉至安全付款頁面完成訂金刷卡</p>
+          <p className="mt-1 text-xs text-gray-500">送出後導轉至安全付款頁面完成刷卡</p>
         </label>
 
         <label

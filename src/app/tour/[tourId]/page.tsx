@@ -51,6 +51,7 @@ export default async function TourRegistrationPage({
           discountMode: tour.discountMode,
           depositAmount: tour.depositAmount,
           depositMode: tour.depositMode,
+          chargeType: tour.chargeType,
         }}
       />
     </div>

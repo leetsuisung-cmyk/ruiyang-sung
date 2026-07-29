@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { calculateFees } from "@/lib/fee-calculation";
+import { formatCurrency } from "@/lib/datetime";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClassName } from "@/components/ui/FormField";
 
@@ -15,7 +17,7 @@ export interface TourFormValues {
   discountAmount: number;
   discountMode: "PER_PERSON" | "FLAT_GROUP";
   depositAmount: number;
-  depositMode: "PER_PERSON" | "FLAT_GROUP";
+  chargeType: "DEPOSIT" | "BALANCE"; // 此次消費：收訂金合計或尾款合計
   peopleCount: string; // 人數，選填，空字串代表未填
 }
 
@@ -53,7 +55,7 @@ const DEFAULT_VALUES: TourFormValues = {
   discountAmount: 0,
   discountMode: "FLAT_GROUP",
   depositAmount: 0,
-  depositMode: "PER_PERSON",
+  chargeType: "DEPOSIT",
   peopleCount: "",
 };
 
@@ -217,7 +219,7 @@ export function TourForm({
           </select>
         </FormField>
 
-        <FormField label="應繳訂金 (元)" htmlFor="depositAmount" required>
+        <FormField label="訂金（每人）(元)" htmlFor="depositAmount" required>
           <input
             id="depositAmount"
             type="number"
@@ -229,18 +231,24 @@ export function TourForm({
           />
         </FormField>
 
-        <FormField label="訂金計算方式" htmlFor="depositMode">
+        <FormField
+          label="此次消費"
+          htmlFor="chargeType"
+          hint="決定客人報名時要繳的金額：訂金合計或尾款合計"
+        >
           <select
-            id="depositMode"
+            id="chargeType"
             className={inputClassName}
-            value={values.depositMode}
-            onChange={(e) => update("depositMode", e.target.value as TourFormValues["depositMode"])}
+            value={values.chargeType}
+            onChange={(e) => update("chargeType", e.target.value as TourFormValues["chargeType"])}
           >
-            <option value="PER_PERSON">每人固定金額</option>
-            <option value="FLAT_GROUP">整團固定金額</option>
+            <option value="DEPOSIT">訂金</option>
+            <option value="BALANCE">尾款</option>
           </select>
         </FormField>
       </div>
+
+      <FeePreview values={values} />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 
@@ -253,5 +261,65 @@ export function TourForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+// 金額自動試算：填入人數後即時顯示訂金合計、每人尾款、尾款合計
+function FeePreview({ values }: { values: TourFormValues }) {
+  const count = Number(values.peopleCount);
+
+  const preview = useMemo(() => {
+    if (!Number.isFinite(count) || count < 1) return null;
+    return calculateFees(
+      {
+        pricePerPerson: values.pricePerPerson,
+        discountAmount: values.discountAmount,
+        discountMode: values.discountMode,
+        depositAmount: values.depositAmount,
+        depositMode: "PER_PERSON",
+      },
+      count
+    );
+  }, [count, values.pricePerPerson, values.discountAmount, values.discountMode, values.depositAmount]);
+
+  if (!preview) {
+    return (
+      <div className="rounded-xl bg-gray-50 p-4 text-sm text-gray-400">
+        填入「人數」後，這裡會自動試算訂金合計與尾款合計
+      </div>
+    );
+  }
+
+  // 每人尾款 = 每人團費 - 每人優惠 - 每人訂金（整團固定優惠時以合計換算）
+  const balancePerPerson = Math.round(preview.balanceDue / count);
+  const chargeNow = values.chargeType === "BALANCE" ? preview.balanceDue : preview.depositRequired;
+
+  return (
+    <div className="rounded-xl bg-teal-50 p-4">
+      <div className="mb-2 text-xs font-medium text-gray-500">金額自動試算（{count} 人）</div>
+      <dl className="flex flex-col gap-1.5 text-sm">
+        <PreviewRow label={`每人團費 x ${count} 人`} value={formatCurrency(preview.subtotal)} />
+        <PreviewRow label="優惠金額" value={`- ${formatCurrency(preview.totalDiscount)}`} />
+        <PreviewRow label="應收合計" value={formatCurrency(preview.totalDue)} />
+        <PreviewRow label={`訂金合計（${formatCurrency(values.depositAmount)} x ${count} 人）`} value={formatCurrency(preview.depositRequired)} />
+        <PreviewRow label="每人尾款" value={formatCurrency(balancePerPerson)} />
+        <PreviewRow label="尾款合計" value={formatCurrency(preview.balanceDue)} />
+        <hr className="my-1 border-teal-100" />
+        <PreviewRow
+          label={`客人報名將繳（此次消費：${values.chargeType === "BALANCE" ? "尾款" : "訂金"}）`}
+          value={formatCurrency(chargeNow)}
+          emphasis
+        />
+      </dl>
+    </div>
+  );
+}
+
+function PreviewRow({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
+  return (
+    <div className="flex items-center justify-between">
+      <dt className={emphasis ? "font-medium text-gray-900" : "text-gray-600"}>{label}</dt>
+      <dd className={emphasis ? "font-bold text-teal-800" : "text-gray-700"}>{value}</dd>
+    </div>
   );
 }

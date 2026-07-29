@@ -74,6 +74,7 @@ export async function POST(request: Request) {
         discountModeSnapshot: tour.discountMode,
         depositAmountSnapshot: tour.depositAmount,
         depositModeSnapshot: tour.depositMode,
+        chargeTypeSnapshot: tour.chargeType,
         subtotal: fees.subtotal,
         totalDiscount: fees.totalDiscount,
         totalDue: fees.totalDue,

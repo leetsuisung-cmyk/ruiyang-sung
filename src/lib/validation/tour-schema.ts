@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const discountModeSchema = z.enum(["PER_PERSON", "FLAT_GROUP"]);
 export const depositModeSchema = z.enum(["PER_PERSON", "FLAT_GROUP"]);
+export const chargeTypeSchema = z.enum(["DEPOSIT", "BALANCE"]);
 
 export const tourSchema = z.object({
   name: z.string().trim().min(1, "請輸入團名"),
@@ -22,6 +23,7 @@ export const tourSchema = z.object({
   discountMode: discountModeSchema.default("FLAT_GROUP"),
   depositAmount: z.coerce.number().int().min(0, "訂金金額不可為負數"),
   depositMode: depositModeSchema.default("PER_PERSON"),
+  chargeType: chargeTypeSchema.default("DEPOSIT"),
   peopleCount: z.preprocess(
     (v) => (v === "" || v === null || v === undefined ? null : v),
     z.coerce.number().int().min(1, "人數至少為 1 人").nullable()

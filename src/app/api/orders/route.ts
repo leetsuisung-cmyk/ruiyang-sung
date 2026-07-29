@@ -54,6 +54,10 @@ export async function POST(request: Request) {
       data: {
         orderNo,
         tourId: tour.id,
+        tourCode: input.tourCode,
+        departureCountry: input.departureCountry,
+        departureDate: input.departureDate,
+        days: input.days,
         memberCount: input.memberCount,
         pricePerPersonSnapshot: tour.pricePerPerson,
         discountAmountSnapshot: tour.discountAmount,
@@ -103,7 +107,7 @@ export async function POST(request: Request) {
   const emailData = {
     orderNo: order.orderNo,
     tourName: tour.name,
-    departureDate: formatDate(tour.departureDate),
+    departureDate: formatDate(order.departureDate ?? tour.departureDate),
     memberCount: order.memberCount,
     totalDue: order.totalDue,
     depositRequired: order.depositRequired,

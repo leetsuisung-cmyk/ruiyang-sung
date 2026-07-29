@@ -46,7 +46,11 @@ export default async function OrderSuccessPage({
 
       <div className="flex flex-col gap-2 rounded-xl bg-white p-4 shadow-sm text-sm">
         <Row label="團名" value={order.tour.name} />
-        <Row label="出發日期" value={formatDate(order.tour.departureDate)} />
+        {(order.tourCode ?? order.tour.tourCode) && (
+          <Row label="團號" value={order.tourCode ?? order.tour.tourCode ?? ""} />
+        )}
+        <Row label="出發國家／目的地" value={order.departureCountry ?? order.tour.departureCountry} />
+        <Row label="出發日期" value={formatDate(order.departureDate ?? order.tour.departureDate)} />
         <Row label="報名人數" value={`${order.memberCount} 人`} />
         <Row label="開立日期" value={formatDateTime(order.createdAt)} />
         <Row label="付款方式" value={PAYMENT_METHOD_LABELS[order.paymentMethod]} />

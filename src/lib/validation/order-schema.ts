@@ -42,6 +42,17 @@ export const paymentInfoSchema = z.discriminatedUnion("paymentMethod", [
 export const createOrderSchema = z
   .object({
     tourId: z.string().min(1),
+    // 行程資料：客人可自行輸入/修改（預設帶入開團設定）
+    tourCode: z
+      .string()
+      .trim()
+      .max(50, "團號長度不可超過 50 字")
+      .transform((v) => (v === "" ? null : v))
+      .nullish()
+      .default(null),
+    departureCountry: z.string().trim().min(1, "請輸入出發國家／目的地"),
+    departureDate: z.coerce.date({ message: "請輸入有效的出發日期" }),
+    days: z.coerce.number().int().min(1, "天數至少為 1 天"),
     memberCount: z.coerce.number().int().min(1, "報名人數至少為 1 人"),
     members: z.array(memberSchema).min(1, "請至少填寫一位團員資料"),
   })

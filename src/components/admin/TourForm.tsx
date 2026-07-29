@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { calculateFees } from "@/lib/fee-calculation";
 import { formatCurrency } from "@/lib/datetime";
+import { COUNTRY_OPTIONS } from "@/lib/constants/countries";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClassName } from "@/components/ui/FormField";
 
@@ -20,30 +21,6 @@ export interface TourFormValues {
   chargeType: "DEPOSIT" | "BALANCE"; // 此次消費：收訂金合計或尾款合計
   peopleCount: string; // 人數，選填，空字串代表未填
 }
-
-// 出發國家／目的地下拉選項（仍可自行輸入其他國家）
-const COUNTRY_OPTIONS = [
-  "日本",
-  "韓國",
-  "泰國",
-  "越南",
-  "新加坡",
-  "馬來西亞",
-  "印尼（峇里島）",
-  "菲律賓",
-  "柬埔寨",
-  "中國大陸",
-  "香港",
-  "澳門",
-  "歐洲",
-  "美國",
-  "加拿大",
-  "澳洲",
-  "紐西蘭",
-  "杜拜",
-  "土耳其",
-  "埃及",
-];
 
 const DEFAULT_VALUES: TourFormValues = {
   name: "",

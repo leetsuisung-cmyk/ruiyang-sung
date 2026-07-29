@@ -87,6 +87,12 @@ model Order {
   tourId String
   tour   Tour   @relation(fields: [tourId], references: [id])
 
+  // 報名時客人可自行輸入/修改的行程資料（預設帶入開團設定）
+  tourCode         String?
+  departureCountry String?
+  departureDate    DateTime?
+  days             Int?
+
   memberCount Int // 報名人數
 
   // 建單當下的金額快照，之後團資料異動不影響已成立訂單

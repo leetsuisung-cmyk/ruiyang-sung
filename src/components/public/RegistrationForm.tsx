@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { calculateFees, type DepositMode, type DiscountMode } from "@/lib/fee-calculation";
+import { COUNTRY_OPTIONS } from "@/lib/constants/countries";
 import { createOrderSchema } from "@/lib/validation/order-schema";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClassName, inputErrorClassName } from "@/components/ui/FormField";
@@ -15,6 +16,10 @@ import type { UploadedFileState } from "./FileUploadField";
 export interface TourSummary {
   id: string;
   name: string;
+  tourCode: string | null;
+  departureCountry: string;
+  departureDate: string; // yyyy-mm-dd
+  days: number;
   pricePerPerson: number;
   discountAmount: number;
   discountMode: DiscountMode;
@@ -24,6 +29,10 @@ export interface TourSummary {
 }
 
 interface FormErrors {
+  tourCode?: string;
+  departureCountry?: string;
+  departureDate?: string;
+  days?: string;
   contactName?: string;
   contactPhone?: string;
   contactEmail?: string;
@@ -35,6 +44,12 @@ interface FormErrors {
 
 export function RegistrationForm({ tour }: { tour: TourSummary }) {
   const router = useRouter();
+
+  // 行程資料：預設帶入開團設定，客人可自行修改
+  const [tourCode, setTourCode] = useState(tour.tourCode ?? "");
+  const [departureCountry, setDepartureCountry] = useState(tour.departureCountry);
+  const [departureDate, setDepartureDate] = useState(tour.departureDate);
+  const [days, setDays] = useState(tour.days);
 
   const [memberCount, setMemberCount] = useState(1);
   const [members, setMembers] = useState<MemberFormState[]>([{ ...EMPTY_MEMBER }]);
@@ -97,6 +112,10 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
 
     const payload = {
       tourId: tour.id,
+      tourCode,
+      departureCountry,
+      departureDate,
+      days,
       memberCount,
       members: members.map((m) => ({
         chineseName: m.chineseName,
@@ -173,6 +192,67 @@ export function RegistrationForm({ tour }: { tour: TourSummary }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6 pb-16">
+      <section className="rounded-xl bg-white p-4 shadow-sm">
+        <h2 className="mb-3 text-sm font-bold text-gray-900">行程資料</h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <FormField label="團號" htmlFor="tourCode" error={errors.tourCode}>
+            <input
+              id="tourCode"
+              className={errors.tourCode ? inputErrorClassName : inputClassName}
+              value={tourCode}
+              onChange={(e) => setTourCode(e.target.value)}
+              placeholder="自行輸入團號"
+            />
+          </FormField>
+
+          <FormField
+            label="出發國家／目的地"
+            htmlFor="departureCountry"
+            required
+            hint="可下拉選擇，也可自行輸入"
+            error={errors.departureCountry}
+          >
+            <input
+              id="departureCountry"
+              className={errors.departureCountry ? inputErrorClassName : inputClassName}
+              list="orderCountryOptions"
+              value={departureCountry}
+              onChange={(e) => setDepartureCountry(e.target.value)}
+              placeholder="選擇或輸入國家／目的地"
+              required
+            />
+            <datalist id="orderCountryOptions">
+              {COUNTRY_OPTIONS.map((country) => (
+                <option key={country} value={country} />
+              ))}
+            </datalist>
+          </FormField>
+
+          <FormField label="出發日期" htmlFor="departureDate" required error={errors.departureDate}>
+            <input
+              id="departureDate"
+              type="date"
+              className={errors.departureDate ? inputErrorClassName : inputClassName}
+              value={departureDate}
+              onChange={(e) => setDepartureDate(e.target.value)}
+              required
+            />
+          </FormField>
+
+          <FormField label="天數" htmlFor="days" required error={errors.days}>
+            <input
+              id="days"
+              type="number"
+              min={1}
+              className={errors.days ? inputErrorClassName : inputClassName}
+              value={days}
+              onChange={(e) => setDays(Number(e.target.value))}
+              required
+            />
+          </FormField>
+        </div>
+      </section>
+
       <section className="rounded-xl bg-white p-4 shadow-sm">
         <h2 className="mb-3 text-sm font-bold text-gray-900">費用試算</h2>
         <FormField label="報名人數" htmlFor="memberCount" required>

@@ -50,6 +50,11 @@ function DashedLine() {
 
 export function ReceiptPdfDocument({ data }: { data: ReceiptPdfData }) {
   const isBalanceCharge = data.chargeType === "BALANCE";
+  // 每人訂金/每人尾款: 以合計金額除以人數回推，兼容舊訂單的整團固定訂金設定
+  const depositPerPerson = Math.round(data.depositRequired / data.memberCount);
+  const balancePerPerson = Math.round(data.balanceDue / data.memberCount);
+  // 此次消費: 依團體設定，本次向客人收訂金合計或尾款合計
+  const chargeNow = isBalanceCharge ? data.balanceDue : data.depositRequired;
 
   return (
     <Document>
@@ -109,20 +114,28 @@ export function ReceiptPdfDocument({ data }: { data: ReceiptPdfData }) {
           </View>
         </View>
 
-        {/* 出發日期 / 團費明細 */}
+        {/* 出發日期 / 團費明細（自動計算式） */}
         <View style={{ marginTop: 8, gap: 3 }}>
           <Text>
             出發日期: {formatDate(data.departureDate)} ({data.days} 天)
           </Text>
+          <Text style={{ fontWeight: "bold" }}>團費明細:</Text>
           <Text>
-            團費明細: 每人團費 {formatCurrency(data.pricePerPerson)} x {data.memberCount} 人 ={" "}
+            每人團費 {formatCurrency(data.pricePerPerson)} x {data.memberCount} 人 ={" "}
             {formatCurrency(data.subtotal)}
-            {data.totalDiscount > 0 ? `, 優惠 -${formatCurrency(data.totalDiscount)}` : ""}
+          </Text>
+          {data.totalDiscount > 0 && <Text>優惠金額: -{formatCurrency(data.totalDiscount)}</Text>}
+          <Text>團費合計: {formatCurrency(data.totalDue)}</Text>
+          <Text>
+            訂金合計: {formatCurrency(depositPerPerson)} x {data.memberCount} 人 ={" "}
+            {formatCurrency(data.depositRequired)}
           </Text>
           <Text>
-            {isBalanceCharge
-              ? `訂金合計 ${formatCurrency(data.depositRequired)} (已收/另計), 此次應繳尾款 ${formatCurrency(data.balanceDue)}`
-              : `應繳訂金 ${formatCurrency(data.depositRequired)}, 尾款 ${formatCurrency(data.balanceDue)} (出發前繳清)`}
+            每人尾款: {formatCurrency(balancePerPerson)} (每人團費 - 優惠 - 每人訂金)
+          </Text>
+          <Text>
+            尾款合計: {formatCurrency(balancePerPerson)} x {data.memberCount} 人 ={" "}
+            {formatCurrency(data.balanceDue)}
           </Text>
           <Text>
             付款方式: {data.paymentMethodLabel}  付款狀態: {data.paymentStatusLabel}
@@ -141,8 +154,11 @@ export function ReceiptPdfDocument({ data }: { data: ReceiptPdfData }) {
 
         <DashedLine />
 
+        <Text style={{ textAlign: "right", fontSize: 9.5, color: "#374151" }}>
+          此次消費: {isBalanceCharge ? "尾款" : "訂金"}
+        </Text>
         <Text style={{ textAlign: "right", fontSize: 12, fontWeight: "bold", marginVertical: 4 }}>
-          應收合計: {formatCurrency(data.totalDue)} 元
+          應收合計: {formatCurrency(chargeNow)} 元
         </Text>
 
         <DoubleLine />

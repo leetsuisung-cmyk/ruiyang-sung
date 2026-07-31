@@ -1,5 +1,4 @@
-import path from "path";
-import { Document, Image, Page, Text, View } from "@react-pdf/renderer";
+import { Document, Page, Text, View } from "@react-pdf/renderer";
 import { formatCurrency, formatDate } from "@/lib/datetime";
 import { COMPANY } from "@/lib/constants/company";
 import { pdfStyles } from "./styles";
@@ -28,8 +27,6 @@ export interface ReceiptPdfData {
   paymentStatusLabel: string;
   createdAt: Date;
 }
-
-const SEAL_PATH = path.join(process.cwd(), "src/lib/pdf/assets/company-seal.png");
 
 function DoubleLine() {
   return (
@@ -163,7 +160,7 @@ export function ReceiptPdfDocument({ data }: { data: ReceiptPdfData }) {
 
         <DoubleLine />
 
-        {/* 簽核列 + 公司章 */}
+        {/* 簽核列 */}
         <View
           style={{
             flexDirection: "row",
@@ -175,8 +172,6 @@ export function ReceiptPdfDocument({ data }: { data: ReceiptPdfData }) {
           <Text>主管:</Text>
           <Text>會計:</Text>
           <Text>承辦人: {COMPANY.contactPerson}</Text>
-          {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={SEAL_PATH} style={{ width: 90 }} />
         </View>
 
         <Text style={pdfStyles.footer}>本請款單由系統自動產生, 如有疑問請洽承辦人</Text>

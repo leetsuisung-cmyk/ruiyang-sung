@@ -34,7 +34,9 @@ export default async function OrderSuccessPage({
     );
   }
 
-  const pdfUrl = `/api/orders/${order.id}/receipt-pdf${t ? `?t=${t}` : ""}`;
+  const invoicePdfUrl = `/api/orders/${order.id}/receipt-pdf${t ? `?t=${t}` : ""}`;
+  const receiptPdfUrl = `/api/orders/${order.id}/payment-receipt-pdf${t ? `?t=${t}` : ""}`;
+  const isPaid = order.paymentStatus !== "UNPAID";
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-4 px-4 py-8">
@@ -76,9 +78,15 @@ export default async function OrderSuccessPage({
         </p>
       )}
 
-      <a href={pdfUrl} target="_blank" rel="noreferrer">
+      {isPaid && (
+        <a href={receiptPdfUrl} target="_blank" rel="noreferrer">
+          <Button className="w-full">下載收據 PDF</Button>
+        </a>
+      )}
+
+      <a href={invoicePdfUrl} target="_blank" rel="noreferrer">
         <Button className="w-full" variant="secondary">
-          下載收據 PDF
+          下載請款單 PDF
         </Button>
       </a>
 

@@ -79,6 +79,14 @@ export default async function AdminOrderDetailPage({
             <a href={`/api/admin/orders/${order.id}/invoice-pdf`} className="text-teal-700 hover:underline">
               匯出請款單 PDF
             </a>
+            {order.paymentStatus !== "UNPAID" && (
+              <a
+                href={`/api/admin/orders/${order.id}/payment-receipt-pdf`}
+                className="font-medium text-teal-700 hover:underline"
+              >
+                匯出收據 PDF（含公司章）
+              </a>
+            )}
             <a href={`/api/admin/orders/${order.id}/rooming-list/pdf`} className="text-teal-700 hover:underline">
               匯出分房表 PDF
             </a>

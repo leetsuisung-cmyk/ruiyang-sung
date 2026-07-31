@@ -59,9 +59,9 @@ model Tour {
   id               String   @id @default(cuid())
   name             String // 團名，如「東北5日」
   tourCode         String? // 團號，後台自行輸入（選填），如 TH20260928A
-  departureCountry String // 出發國家／目的地
+  departureCountry String? // 出發國家／目的地（改由客人報名時填寫）
   departureDate    DateTime // 出發日期
-  days             Int // 天數
+  days             Int? // 天數（改由客人報名時填寫）
   pricePerPerson   Int // 每人團費金額（元）
 
   discountAmount Int          @default(0) // 優惠金額（依 discountMode 解讀）

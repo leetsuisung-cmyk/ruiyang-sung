@@ -42,7 +42,6 @@ export default async function AdminToursPage() {
                       </span>
                     )}
                   </div>
-                  <div className="text-xs text-gray-500">{tour.departureCountry}</div>
                 </td>
                 <td className="px-4 py-3">{formatDate(tour.departureDate)}</td>
                 <td className="px-4 py-3">{formatCurrency(tour.pricePerPerson)}</td>

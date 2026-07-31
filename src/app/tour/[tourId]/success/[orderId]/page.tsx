@@ -49,7 +49,7 @@ export default async function OrderSuccessPage({
         {(order.tourCode ?? order.tour.tourCode) && (
           <Row label="團號" value={order.tourCode ?? order.tour.tourCode ?? ""} />
         )}
-        <Row label="出發國家／目的地" value={order.departureCountry ?? order.tour.departureCountry} />
+        <Row label="出發國家／目的地" value={order.departureCountry ?? order.tour.departureCountry ?? "-"} />
         <Row label="出發日期" value={formatDate(order.departureDate ?? order.tour.departureDate)} />
         <Row label="報名人數" value={`${order.memberCount} 人`} />
         <Row label="開立日期" value={formatDateTime(order.createdAt)} />

@@ -34,7 +34,7 @@ export default async function AdminOrderDetailPage({
         <div className="rounded-xl bg-white p-4 shadow-sm text-sm">
           <h2 className="mb-2 text-sm font-bold text-gray-900">訂單資訊</h2>
           <Row label="團號" value={order.tourCode ?? order.tour.tourCode ?? "-"} />
-          <Row label="出發國家／目的地" value={order.departureCountry ?? order.tour.departureCountry} />
+          <Row label="出發國家／目的地" value={order.departureCountry ?? order.tour.departureCountry ?? "-"} />
           <Row label="出發日期" value={formatDate(order.departureDate ?? order.tour.departureDate)} />
           <Row label="報名人數" value={`${order.memberCount} 人`} />
           <Row label="聯絡人" value={order.contactName} />

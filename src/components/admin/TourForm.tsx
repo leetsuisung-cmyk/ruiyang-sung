@@ -4,16 +4,13 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { calculateFees } from "@/lib/fee-calculation";
 import { formatCurrency } from "@/lib/datetime";
-import { COUNTRY_OPTIONS } from "@/lib/constants/countries";
 import { Button } from "@/components/ui/Button";
 import { FormField, inputClassName } from "@/components/ui/FormField";
 
 export interface TourFormValues {
   name: string;
   tourCode: string;
-  departureCountry: string;
   departureDate: string; // yyyy-mm-dd
-  days: number;
   pricePerPerson: number;
   discountAmount: number;
   discountMode: "PER_PERSON" | "FLAT_GROUP";
@@ -25,9 +22,7 @@ export interface TourFormValues {
 const DEFAULT_VALUES: TourFormValues = {
   name: "",
   tourCode: "",
-  departureCountry: "",
   departureDate: "",
-  days: 5,
   pricePerPerson: 0,
   discountAmount: 0,
   discountMode: "FLAT_GROUP",
@@ -100,28 +95,6 @@ export function TourForm({
           />
         </FormField>
 
-        <FormField
-          label="出發國家／目的地"
-          htmlFor="departureCountry"
-          hint="可下拉選擇常見國家，也可自行輸入"
-          required
-        >
-          <input
-            id="departureCountry"
-            className={inputClassName}
-            list="departureCountryOptions"
-            value={values.departureCountry}
-            onChange={(e) => update("departureCountry", e.target.value)}
-            placeholder="選擇或輸入國家／目的地"
-            required
-          />
-          <datalist id="departureCountryOptions">
-            {COUNTRY_OPTIONS.map((country) => (
-              <option key={country} value={country} />
-            ))}
-          </datalist>
-        </FormField>
-
         <FormField label="出發日期" htmlFor="departureDate" required>
           <input
             id="departureDate"
@@ -129,18 +102,6 @@ export function TourForm({
             className={inputClassName}
             value={values.departureDate}
             onChange={(e) => update("departureDate", e.target.value)}
-            required
-          />
-        </FormField>
-
-        <FormField label="天數" htmlFor="days" required>
-          <input
-            id="days"
-            type="number"
-            min={1}
-            className={inputClassName}
-            value={values.days}
-            onChange={(e) => update("days", Number(e.target.value))}
             required
           />
         </FormField>

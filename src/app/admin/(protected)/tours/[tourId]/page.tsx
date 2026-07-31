@@ -21,9 +21,7 @@ export default async function EditTourPage({
         initialValues={{
           name: tour.name,
           tourCode: tour.tourCode ?? "",
-          departureCountry: tour.departureCountry,
           departureDate: tour.departureDate.toISOString().slice(0, 10),
-          days: tour.days,
           pricePerPerson: tour.pricePerPerson,
           discountAmount: tour.discountAmount,
           discountMode: tour.discountMode,

@@ -26,9 +26,8 @@ export default async function HomePage() {
             className="rounded-xl bg-white p-4 shadow-sm transition hover:shadow-md"
           >
             <div className="font-bold text-gray-900">{tour.name}</div>
-            <div className="text-sm text-gray-500">{tour.departureCountry}</div>
             <div className="mt-1 text-sm text-teal-700">
-              出發日期：{formatDate(tour.departureDate)}（{tour.days} 天）
+              出發日期：{formatDate(tour.departureDate)}
             </div>
           </Link>
         ))}

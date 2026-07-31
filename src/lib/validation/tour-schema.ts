@@ -13,11 +13,19 @@ export const tourSchema = z.object({
     .transform((v) => (v === "" ? null : v))
     .nullish()
     .default(null),
-  departureCountry: z.string().trim().min(1, "請輸入出發國家／目的地"),
+  departureCountry: z
+    .string()
+    .trim()
+    .transform((v) => (v === "" ? null : v))
+    .nullish()
+    .default(null),
   departureDate: z.coerce.date({
     message: "請輸入有效的出發日期",
   }),
-  days: z.coerce.number().int().min(1, "天數至少為 1 天"),
+  days: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : v),
+    z.coerce.number().int().min(1, "天數至少為 1 天").nullable()
+  ).default(null),
   pricePerPerson: z.coerce.number().int().min(0, "每人團費不可為負數"),
   discountAmount: z.coerce.number().int().min(0, "優惠金額不可為負數").default(0),
   discountMode: discountModeSchema.default("FLAT_GROUP"),
